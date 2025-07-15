@@ -1,0 +1,31 @@
+{
+  "name": "b2b-sales-miniprogram",
+  "version": "1.0.0",
+  "description": "快消品B2B平台业务员销售工具小程序",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "nodemon server/index.js",
+    "start": "node server/index.js",
+    "build": "npm run build:miniprogram",
+    "build:miniprogram": "cd miniprogram && npm run build"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "mongoose": "^8.0.3",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1",
+    "joi": "^17.11.0",
+    "moment": "^2.29.4",
+    "redis": "^4.6.12"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": ["b2b", "miniprogram", "sales", "快消品"],
+  "author": "B2B Platform Team",
+  "license": "MIT"
+}

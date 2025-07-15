@@ -1,0 +1,75 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/login",
+    "pages/stores/list/list",
+    "pages/stores/detail/detail",
+    "pages/stores/add/add",
+    "pages/stores/visit/visit",
+    "pages/products/list/list",
+    "pages/products/detail/detail",
+    "pages/orders/list/list",
+    "pages/orders/detail/detail",
+    "pages/orders/create/create",
+    "pages/analytics/dashboard/dashboard",
+    "pages/analytics/stores/stores",
+    "pages/analytics/products/products",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#2E7CE8",
+    "navigationBarTitleText": "B2B销售助手",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f8f9fa"
+  },
+  "tabBar": {
+    "color": "#666666",
+    "selectedColor": "#2E7CE8",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/icons/home.png",
+        "selectedIconPath": "assets/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/stores/list/list",
+        "text": "门店",
+        "iconPath": "assets/icons/store.png",
+        "selectedIconPath": "assets/icons/store-active.png"
+      },
+      {
+        "pagePath": "pages/products/list/list",
+        "text": "产品",
+        "iconPath": "assets/icons/product.png",
+        "selectedIconPath": "assets/icons/product-active.png"
+      },
+      {
+        "pagePath": "pages/orders/list/list",
+        "text": "订单",
+        "iconPath": "assets/icons/order.png",
+        "selectedIconPath": "assets/icons/order-active.png"
+      },
+      {
+        "pagePath": "pages/analytics/dashboard/dashboard",
+        "text": "数据",
+        "iconPath": "assets/icons/chart.png",
+        "selectedIconPath": "assets/icons/chart-active.png"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "需要获取您的位置信息用于门店定位"
+    }
+  },
+  "requiredBackgroundModes": ["location"],
+  "networkTimeout": {
+    "request": 10000,
+    "downloadFile": 10000
+  },
+  "debug": false
+}
