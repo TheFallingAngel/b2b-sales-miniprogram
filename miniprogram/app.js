@@ -2,7 +2,7 @@ App({
   globalData: {
     userInfo: null,
     token: null,
-    baseUrl: 'https://your-api-domain.railway.app/api',
+    baseUrl: 'https://b2b-sales-miniprogram-production.up.railway.app/api',
     version: '1.0.0'
   },
 
