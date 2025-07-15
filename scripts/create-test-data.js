@@ -9,7 +9,7 @@ const Order = require('../server/models/Order');
 async function createTestData() {
   try {
     console.log('🔗 连接数据库...');
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/b2b_sales_dev');
+    await mongoose.connect(process.env.MONGO_URL || process.env.MONGODB_URI || 'mongodb://localhost:27017/b2b_sales_dev');
     console.log('✅ 数据库连接成功');
 
     console.log('🗑️ 清理现有数据...');
