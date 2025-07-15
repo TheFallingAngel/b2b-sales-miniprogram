@@ -1,0 +1,121 @@
+<view class="container">
+  <!-- 用户信息卡片 -->
+  <view class="user-card">
+    <view class="user-info">
+      <image class="avatar" src="{{userInfo.avatar || '/assets/images/default-avatar.png'}}" />
+      <view class="user-details">
+        <view class="name">{{userInfo.realName}}</view>
+        <view class="role">{{userInfo.role}} · {{userInfo.region}}</view>
+      </view>
+    </view>
+    <view class="performance">
+      <view class="performance-item">
+        <view class="value">{{performance.currentMonth}}</view>
+        <view class="label">本月业绩</view>
+      </view>
+      <view class="performance-item">
+        <view class="value">{{performance.completion}}%</view>
+        <view class="label">完成率</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷操作 -->
+  <view class="quick-actions">
+    <view class="section-title">快捷操作</view>
+    <view class="actions-grid">
+      <view class="action-item" bindtap="navigateToAddStore">
+        <view class="action-icon" style="background: #4CAF50;">
+          <text class="iconfont icon-add"></text>
+        </view>
+        <view class="action-text">新增门店</view>
+      </view>
+      <view class="action-item" bindtap="navigateToCreateOrder">
+        <view class="action-icon" style="background: #2196F3;">
+          <text class="iconfont icon-order"></text>
+        </view>
+        <view class="action-text">代客下单</view>
+      </view>
+      <view class="action-item" bindtap="navigateToStoreVisit">
+        <view class="action-icon" style="background: #FF9800;">
+          <text class="iconfont icon-visit"></text>
+        </view>
+        <view class="action-text">门店拜访</view>
+      </view>
+      <view class="action-item" bindtap="navigateToInventory">
+        <view class="action-icon" style="background: #9C27B0;">
+          <text class="iconfont icon-inventory"></text>
+        </view>
+        <view class="action-text">库存查询</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 数据概览 -->
+  <view class="data-overview">
+    <view class="section-title">数据概览</view>
+    <view class="overview-grid">
+      <view class="overview-item" bindtap="navigateToStores">
+        <view class="overview-value">{{storeStats.total}}</view>
+        <view class="overview-label">管理门店</view>
+        <view class="overview-trend up" wx:if="{{storeStats.newThisMonth > 0}}">
+          +{{storeStats.newThisMonth}}
+        </view>
+      </view>
+      <view class="overview-item" bindtap="navigateToOrders">
+        <view class="overview-value">{{orderStats.monthlyOrders}}</view>
+        <view class="overview-label">本月订单</view>
+        <view class="overview-trend {{orderStats.trend >= 0 ? 'up' : 'down'}}">
+          {{orderStats.trend >= 0 ? '+' : ''}}{{orderStats.trend}}%
+        </view>
+      </view>
+      <view class="overview-item">
+        <view class="overview-value">{{orderStats.monthlyAmount}}</view>
+        <view class="overview-label">本月金额</view>
+        <view class="overview-sub">均单{{orderStats.avgOrderValue}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 待办事项 -->
+  <view class="todo-section">
+    <view class="section-title">
+      <text>待办事项</text>
+      <view class="todo-count" wx:if="{{todoList.length > 0}}">{{todoList.length}}</view>
+    </view>
+    <view class="todo-list" wx:if="{{todoList.length > 0}}">
+      <view class="todo-item" wx:for="{{todoList}}" wx:key="id" bindtap="handleTodoTap" data-todo="{{item}}">
+        <view class="todo-icon {{item.priority}}">
+          <text class="iconfont {{item.icon}}"></text>
+        </view>
+        <view class="todo-content">
+          <view class="todo-title">{{item.title}}</view>
+          <view class="todo-desc">{{item.description}}</view>
+        </view>
+        <view class="todo-time">{{item.timeAgo}}</view>
+      </view>
+    </view>
+    <view class="empty-state" wx:else>
+      <text class="iconfont icon-check-circle"></text>
+      <view class="empty-text">暂无待办事项</view>
+    </view>
+  </view>
+
+  <!-- 最近动态 -->
+  <view class="recent-activities">
+    <view class="section-title">最近动态</view>
+    <view class="activity-list" wx:if="{{activities.length > 0}}">
+      <view class="activity-item" wx:for="{{activities}}" wx:key="id">
+        <view class="activity-time">{{item.timeAgo}}</view>
+        <view class="activity-content">
+          <view class="activity-title">{{item.title}}</view>
+          <view class="activity-desc">{{item.description}}</view>
+        </view>
+      </view>
+    </view>
+    <view class="empty-state" wx:else>
+      <text class="iconfont icon-history"></text>
+      <view class="empty-text">暂无动态记录</view>
+    </view>
+  </view>
+</view>
