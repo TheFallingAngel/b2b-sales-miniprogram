@@ -106,6 +106,181 @@ app.post('/api/init-database', async (req, res) => {
   }
 });
 
+// 创建完整测试数据接口
+app.post('/api/create-test-data', async (req, res) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(500).json({ 
+        success: false, 
+        message: '数据库连接未就绪' 
+      });
+    }
+
+    const User = require('./models/User');
+    const Store = require('./models/Store');
+    const Product = require('./models/Product');
+    const Order = require('./models/Order');
+
+    console.log('开始创建完整测试数据...');
+
+    // 创建多个用户
+    const users = [];
+    
+    // 管理员
+    const admin = new User({
+      username: 'admin',
+      phone: '13900000001',
+      password: '123456',
+      realName: '系统管理员',
+      region: '总部',
+      role: '管理员',
+      isActive: true
+    });
+    users.push(await admin.save());
+
+    // 区域经理
+    const manager = new User({
+      username: 'manager_gz',
+      phone: '13900000002',
+      password: '123456',
+      realName: '李经理',
+      region: '广州',
+      role: '区域经理',
+      isActive: true
+    });
+    users.push(await manager.save());
+
+    // 业务员
+    const sales1 = new User({
+      username: 'sales_001',
+      phone: '13900000003',
+      password: '123456',
+      realName: '张业务',
+      region: '深圳',
+      role: '业务员',
+      isActive: true
+    });
+    users.push(await sales1.save());
+
+    const sales2 = new User({
+      username: 'sales_002',
+      phone: '13900000004',
+      password: '123456',
+      realName: '王业务',
+      region: '广州',
+      role: '业务员',
+      isActive: true
+    });
+    users.push(await sales2.save());
+
+    // 创建产品
+    const products = [];
+    const productData = [
+      { name: '可口可乐 330ml', category: '饮料', brand: '可口可乐', price: 3.5, unit: '瓶', stock: 1000 },
+      { name: '百事可乐 330ml', category: '饮料', brand: '百事', price: 3.2, unit: '瓶', stock: 800 },
+      { name: '康师傅方便面', category: '方便食品', brand: '康师傅', price: 4.2, unit: '包', stock: 500 },
+      { name: '统一方便面', category: '方便食品', brand: '统一', price: 4.0, unit: '包', stock: 600 },
+      { name: '旺旺雪饼', category: '休闲食品', brand: '旺旺', price: 6.8, unit: '包', stock: 300 },
+      { name: '乐事薯片', category: '休闲食品', brand: '乐事', price: 8.5, unit: '包', stock: 400 },
+      { name: '雀巢咖啡', category: '饮品', brand: '雀巢', price: 12.0, unit: '盒', stock: 200 },
+      { name: '蒙牛纯牛奶', category: '乳制品', brand: '蒙牛', price: 15.8, unit: '盒', stock: 150 }
+    ];
+
+    for (const data of productData) {
+      const product = new Product({
+        ...data,
+        isActive: true,
+        description: `优质${data.name}，热销产品`,
+        specifications: '标准规格'
+      });
+      products.push(await product.save());
+    }
+
+    // 创建门店
+    const stores = [];
+    const storeData = [
+      { name: '便利蜂-南山店', address: '深圳市南山区科技园南路123号', contact: '张老板', phone: '13700000001', managerId: sales1._id },
+      { name: '7-11便利店', address: '深圳市福田区华强北路456号', contact: '李老板', phone: '13700000002', managerId: sales1._id },
+      { name: '天虹超市', address: '广州市天河区珠江新城789号', contact: '王老板', phone: '13700000003', managerId: sales2._id },
+      { name: '华润万家', address: '广州市越秀区中山路101号', contact: '赵老板', phone: '13700000004', managerId: sales2._id },
+      { name: '美宜佳-罗湖店', address: '深圳市罗湖区东门路202号', contact: '陈老板', phone: '13700000005', managerId: sales1._id }
+    ];
+
+    for (const data of storeData) {
+      const store = new Store({
+        ...data,
+        status: 'active',
+        storeType: '便利店',
+        area: Math.floor(Math.random() * 200) + 50,
+        monthlyTarget: Math.floor(Math.random() * 50000) + 10000,
+        location: {
+          type: 'Point',
+          coordinates: [114.0579 + Math.random() * 0.1, 22.5431 + Math.random() * 0.1]
+        }
+      });
+      stores.push(await store.save());
+    }
+
+    // 创建订单
+    const orders = [];
+    for (let i = 0; i < 10; i++) {
+      const store = stores[Math.floor(Math.random() * stores.length)];
+      const selectedProducts = products.slice(0, Math.floor(Math.random() * 4) + 1);
+      
+      const orderItems = selectedProducts.map(product => ({
+        product: product._id,
+        productName: product.name,
+        quantity: Math.floor(Math.random() * 10) + 1,
+        price: product.price,
+        totalPrice: product.price * (Math.floor(Math.random() * 10) + 1)
+      }));
+
+      const totalAmount = orderItems.reduce((sum, item) => sum + item.totalPrice, 0);
+
+      const order = new Order({
+        customer: store._id,
+        customerName: store.name,
+        items: orderItems,
+        totalAmount,
+        status: ['pending', 'confirmed', 'shipped', 'delivered'][Math.floor(Math.random() * 4)],
+        paymentStatus: ['pending', 'paid'][Math.floor(Math.random() * 2)],
+        createdBy: store.managerId,
+        shippingAddress: store.address,
+        customerPhone: store.phone
+      });
+      orders.push(await order.save());
+    }
+
+    const summary = {
+      success: true,
+      message: '完整测试数据创建成功',
+      data: {
+        users: users.length,
+        products: products.length,
+        stores: stores.length,
+        orders: orders.length
+      },
+      testAccounts: [
+        { role: '管理员', phone: '13900000001', password: '123456' },
+        { role: '区域经理', phone: '13900000002', password: '123456' },
+        { role: '业务员', phone: '13900000003', password: '123456' },
+        { role: '业务员', phone: '13900000004', password: '123456' }
+      ]
+    };
+
+    console.log('测试数据创建完成:', summary);
+    res.json(summary);
+
+  } catch (error) {
+    console.error('创建测试数据失败:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: '创建测试数据失败', 
+      error: error.message 
+    });
+  }
+});
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ 
