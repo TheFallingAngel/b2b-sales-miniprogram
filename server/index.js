@@ -51,14 +51,30 @@ app.get('/api/health', (req, res) => {
 // 数据库初始化接口（仅用于生产环境首次部署）
 app.post('/api/init-database', async (req, res) => {
   try {
-    const User = require('./models/User');
-    
-    // 检查是否已初始化
-    const userCount = await User.countDocuments();
-    if (userCount > 0) {
-      return res.json({ success: false, message: '数据库已有数据，无需初始化' });
+    // 检查数据库连接状态
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(500).json({ 
+        success: false, 
+        message: '数据库连接未就绪',
+        connectionState: mongoose.connection.readyState 
+      });
     }
 
+    const User = require('./models/User');
+    
+    // 设置查询超时
+    const userCount = await User.countDocuments().maxTimeMS(5000);
+    console.log('当前用户数量:', userCount);
+    
+    if (userCount > 0) {
+      return res.json({ 
+        success: false, 
+        message: `数据库已有${userCount}个用户，无需初始化` 
+      });
+    }
+
+    console.log('开始创建测试用户...');
+    
     // 创建测试用户
     const testUser = new User({
       username: 'test_prod',
@@ -70,15 +86,23 @@ app.post('/api/init-database', async (req, res) => {
       isActive: true
     });
     
-    await testUser.save();
+    const savedUser = await testUser.save();
+    console.log('用户创建成功:', savedUser._id);
     
     res.json({ 
       success: true, 
       message: '数据库初始化成功',
-      testAccount: { phone: '13800138000', password: '123456' }
+      testAccount: { phone: '13800138000', password: '123456' },
+      userId: savedUser._id
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: '初始化失败', error: error.message });
+    console.error('初始化失败:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: '初始化失败', 
+      error: error.message,
+      errorName: error.name
+    });
   }
 });
 
