@@ -123,6 +123,23 @@ app.post('/api/create-test-data', async (req, res) => {
 
     console.log('开始创建完整测试数据...');
 
+    // 检查是否已有完整数据
+    const existingUsers = await User.countDocuments();
+    const existingProducts = await Product.countDocuments();
+    const existingStores = await Store.countDocuments();
+    
+    if (existingUsers > 1 || existingProducts > 0 || existingStores > 0) {
+      return res.json({
+        success: false,
+        message: '数据库已有测试数据，无需重复创建',
+        existing: {
+          users: existingUsers,
+          products: existingProducts, 
+          stores: existingStores
+        }
+      });
+    }
+
     // 创建多个用户
     const users = [];
     
