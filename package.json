@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "nodemon server/index.js",
     "start": "node server/index.js",
+    "start:local": "node scripts/start-local.js",
+    "create:testdata": "node scripts/create-test-data.js",
     "build": "npm run build:miniprogram",
     "build:miniprogram": "cd miniprogram && npm run build"
   },
