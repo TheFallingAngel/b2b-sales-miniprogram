@@ -1,0 +1,13 @@
+# Nixpacks配置文件 - 告诉Railway如何部署
+
+[phases.build]
+# 跳过build阶段，这是一个纯API服务
+cmds = ["echo 'API服务无需构建步骤'"]
+
+[phases.start]
+# 启动Node.js服务器
+cmd = "npm start"
+
+[variables]
+# 确保使用正确的Node.js版本
+NODE_VERSION = "18"
