@@ -48,6 +48,40 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// 数据库初始化接口（仅用于生产环境首次部署）
+app.post('/api/init-database', async (req, res) => {
+  try {
+    const User = require('./models/User');
+    
+    // 检查是否已初始化
+    const userCount = await User.countDocuments();
+    if (userCount > 0) {
+      return res.json({ success: false, message: '数据库已有数据，无需初始化' });
+    }
+
+    // 创建测试用户
+    const testUser = new User({
+      username: 'test_prod',
+      phone: '13800138000', 
+      password: '123456',
+      realName: '生产测试用户',
+      region: '深圳',
+      role: '业务员',
+      isActive: true
+    });
+    
+    await testUser.save();
+    
+    res.json({ 
+      success: true, 
+      message: '数据库初始化成功',
+      testAccount: { phone: '13800138000', password: '123456' }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: '初始化失败', error: error.message });
+  }
+});
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ 
