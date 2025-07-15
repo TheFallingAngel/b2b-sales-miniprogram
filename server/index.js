@@ -322,6 +322,52 @@ app.post('/api/create-test-data', async (req, res) => {
   }
 });
 
+// 清理数据库接口（仅用于开发测试）
+app.post('/api/clear-database', async (req, res) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(500).json({ 
+        success: false, 
+        message: '数据库连接未就绪' 
+      });
+    }
+
+    const User = require('./models/User');
+    const Store = require('./models/Store');
+    const Product = require('./models/Product');
+    const Order = require('./models/Order');
+
+    console.log('开始清理数据库...');
+
+    const deletedUsers = await User.deleteMany({});
+    const deletedStores = await Store.deleteMany({});
+    const deletedProducts = await Product.deleteMany({});
+    const deletedOrders = await Order.deleteMany({});
+
+    const summary = {
+      success: true,
+      message: '数据库清理完成',
+      deleted: {
+        users: deletedUsers.deletedCount,
+        stores: deletedStores.deletedCount,
+        products: deletedProducts.deletedCount,
+        orders: deletedOrders.deletedCount
+      }
+    };
+
+    console.log('数据库清理完成:', summary);
+    res.json(summary);
+
+  } catch (error) {
+    console.error('清理数据库失败:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: '清理数据库失败', 
+      error: error.message 
+    });
+  }
+});
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ 
