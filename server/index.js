@@ -43,6 +43,7 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 
     message: 'B2B销售小程序API服务运行正常',
+    version: '1.0.1',
     timestamp: new Date().toISOString()
   });
 });
