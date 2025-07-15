@@ -240,24 +240,39 @@ app.post('/api/create-test-data', async (req, res) => {
     // 创建门店
     const stores = [];
     const storeData = [
-      { name: '便利蜂-南山店', address: '深圳市南山区科技园南路123号', contact: '张老板', phone: '13700000001', managerId: sales1._id },
-      { name: '7-11便利店', address: '深圳市福田区华强北路456号', contact: '李老板', phone: '13700000002', managerId: sales1._id },
-      { name: '天虹超市', address: '广州市天河区珠江新城789号', contact: '王老板', phone: '13700000003', managerId: sales2._id },
-      { name: '华润万家', address: '广州市越秀区中山路101号', contact: '赵老板', phone: '13700000004', managerId: sales2._id },
-      { name: '美宜佳-罗湖店', address: '深圳市罗湖区东门路202号', contact: '陈老板', phone: '13700000005', managerId: sales1._id }
+      { storeName: '便利蜂-南山店', storeCode: 'ST001', ownerName: '张老板', ownerPhone: '13700000001', city: '深圳市', district: '南山区', street: '科技园南路123号', salesRep: sales1._id },
+      { storeName: '7-11便利店', storeCode: 'ST002', ownerName: '李老板', ownerPhone: '13700000002', city: '深圳市', district: '福田区', street: '华强北路456号', salesRep: sales1._id },
+      { storeName: '天虹超市', storeCode: 'ST003', ownerName: '王老板', ownerPhone: '13700000003', city: '广州市', district: '天河区', street: '珠江新城789号', salesRep: sales2._id },
+      { storeName: '华润万家', storeCode: 'ST004', ownerName: '赵老板', ownerPhone: '13700000004', city: '广州市', district: '越秀区', street: '中山路101号', salesRep: sales2._id },
+      { storeName: '美宜佳-罗湖店', storeCode: 'ST005', ownerName: '陈老板', ownerPhone: '13700000005', city: '深圳市', district: '罗湖区', street: '东门路202号', salesRep: sales1._id }
     ];
 
     for (const data of storeData) {
       const store = new Store({
-        ...data,
-        status: 'active',
-        storeType: '便利店',
-        area: Math.floor(Math.random() * 200) + 50,
-        monthlyTarget: Math.floor(Math.random() * 50000) + 10000,
-        location: {
-          type: 'Point',
-          coordinates: [114.0579 + Math.random() * 0.1, 22.5431 + Math.random() * 0.1]
-        }
+        storeName: data.storeName,
+        storeCode: data.storeCode,
+        owner: {
+          name: data.ownerName,
+          phone: data.ownerPhone
+        },
+        address: {
+          province: '广东省',
+          city: data.city,
+          district: data.district,
+          street: data.street,
+          coordinates: {
+            longitude: 114.0579 + Math.random() * 0.1,
+            latitude: 22.5431 + Math.random() * 0.1
+          }
+        },
+        storeInfo: {
+          storeType: '便利店',
+          storeSize: '中型(50-200平)',
+          monthlyRevenue: '1-5万'
+        },
+        businessStatus: '合作客户',
+        salesRep: data.salesRep,
+        isActive: true
       });
       stores.push(await store.save());
     }
