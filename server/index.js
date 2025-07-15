@@ -176,22 +176,46 @@ app.post('/api/create-test-data', async (req, res) => {
     // 创建产品
     const products = [];
     const productData = [
-      { name: '可口可乐 330ml', category: '饮料', brand: '可口可乐', price: 3.5, unit: '瓶', stock: 1000 },
-      { name: '百事可乐 330ml', category: '饮料', brand: '百事', price: 3.2, unit: '瓶', stock: 800 },
-      { name: '康师傅方便面', category: '方便食品', brand: '康师傅', price: 4.2, unit: '包', stock: 500 },
-      { name: '统一方便面', category: '方便食品', brand: '统一', price: 4.0, unit: '包', stock: 600 },
-      { name: '旺旺雪饼', category: '休闲食品', brand: '旺旺', price: 6.8, unit: '包', stock: 300 },
-      { name: '乐事薯片', category: '休闲食品', brand: '乐事', price: 8.5, unit: '包', stock: 400 },
-      { name: '雀巢咖啡', category: '饮品', brand: '雀巢', price: 12.0, unit: '盒', stock: 200 },
-      { name: '蒙牛纯牛奶', category: '乳制品', brand: '蒙牛', price: 15.8, unit: '盒', stock: 150 }
+      { productName: '可口可乐 330ml', category: '饮料', brand: '可口可乐', price: 3.5, unit: '瓶', stock: 1000, code: 'KKL001' },
+      { productName: '百事可乐 330ml', category: '饮料', brand: '百事', price: 3.2, unit: '瓶', stock: 800, code: 'BSK001' },
+      { productName: '康师傅方便面', category: '方便食品', brand: '康师傅', price: 4.2, unit: '包', stock: 500, code: 'KSF001' },
+      { productName: '统一方便面', category: '方便食品', brand: '统一', price: 4.0, unit: '包', stock: 600, code: 'TY001' },
+      { productName: '旺旺雪饼', category: '休闲食品', brand: '旺旺', price: 6.8, unit: '包', stock: 300, code: 'WW001' },
+      { productName: '乐事薯片', category: '休闲食品', brand: '乐事', price: 8.5, unit: '包', stock: 400, code: 'LS001' },
+      { productName: '雀巢咖啡', category: '饮品', brand: '雀巢', price: 12.0, unit: '盒', stock: 200, code: 'QC001' },
+      { productName: '蒙牛纯牛奶', category: '乳制品', brand: '蒙牛', price: 15.8, unit: '盒', stock: 150, code: 'MN001' }
     ];
 
     for (const data of productData) {
       const product = new Product({
-        ...data,
+        productCode: data.code,
+        productName: data.productName,
+        brand: data.brand,
+        category: {
+          primary: data.category,
+          secondary: data.category
+        },
+        specifications: {
+          unit: data.unit,
+          netWeight: '330ml',
+          packageSize: '标准包装'
+        },
+        pricing: {
+          wholesalePrice: data.price * 0.8,
+          retailPrice: data.price,
+          minOrderQty: 1
+        },
+        inventory: {
+          totalStock: data.stock,
+          availableStock: data.stock,
+          safetyStock: 50
+        },
+        productInfo: {
+          description: `优质${data.productName}，热销产品`,
+          manufacturer: data.brand
+        },
         isActive: true,
-        description: `优质${data.name}，热销产品`,
-        specifications: '标准规格'
+        priority: '中'
       });
       products.push(await product.save());
     }
