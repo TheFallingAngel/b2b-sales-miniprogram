@@ -14,20 +14,37 @@ App({
   },
 
   checkLoginStatus() {
-    const token = wx.getStorageSync('token');
-    const userInfo = wx.getStorageSync('userInfo');
-    
-    if (token && userInfo) {
-      this.globalData.token = token;
-      this.globalData.userInfo = userInfo;
+    try {
+      const token = wx.getStorageSync('token');
+      const userInfo = wx.getStorageSync('userInfo');
       
-      this.validateToken().then(valid => {
-        if (!valid) {
-          this.logout();
-        }
-      });
-    } else {
-      this.redirectToLogin();
+      if (token && userInfo) {
+        this.globalData.token = token;
+        this.globalData.userInfo = userInfo;
+        
+        // 异步验证token，不阻塞启动
+        setTimeout(() => {
+          this.validateToken().then(valid => {
+            if (!valid) {
+              this.logout();
+            }
+          }).catch(err => {
+            console.error('Token验证异常:', err);
+            // 验证失败不影响启动，让用户手动重新登录
+          });
+        }, 1000);
+      } else {
+        // 延迟跳转，避免启动时的循环
+        setTimeout(() => {
+          this.redirectToLogin();
+        }, 500);
+      }
+    } catch (error) {
+      console.error('检查登录状态失败:', error);
+      // 出错时也延迟跳转
+      setTimeout(() => {
+        this.redirectToLogin();
+      }, 500);
     }
   },
 
@@ -63,7 +80,7 @@ App({
 
   request(options) {
     return new Promise((resolve, reject) => {
-      const { url, method = 'GET', data = {}, showLoading = false } = options;
+      const { url, method = 'GET', data = {}, showLoading = false, timeout = 10000 } = options;
       
       if (showLoading) {
         wx.showLoading({ title: '加载中...' });
@@ -73,6 +90,7 @@ App({
         url: this.globalData.baseUrl + url,
         method,
         data,
+        timeout, // 添加超时设置
         header: {
           'Content-Type': 'application/json',
           'Authorization': this.globalData.token ? `Bearer ${this.globalData.token}` : ''
@@ -85,11 +103,14 @@ App({
           if (res.statusCode === 200) {
             resolve(res.data);
           } else if (res.statusCode === 401) {
+            console.warn('Token已过期，需要重新登录');
             this.logout();
             reject(new Error('未授权访问'));
           } else {
             const errorMsg = res.data?.message || '请求失败';
-            this.showError(errorMsg);
+            if (showLoading) {
+              this.showError(errorMsg);
+            }
             reject(new Error(errorMsg));
           }
         },
@@ -98,7 +119,10 @@ App({
             wx.hideLoading();
           }
           
-          this.showError('网络连接失败');
+          console.error('网络请求失败:', error);
+          if (showLoading) {
+            this.showError('网络连接失败，请检查网络设置');
+          }
           reject(error);
         }
       });
@@ -136,13 +160,24 @@ App({
   },
 
   redirectToLogin() {
-    const pages = getCurrentPages();
-    const currentPage = pages[pages.length - 1];
-    
-    if (currentPage && currentPage.route !== 'pages/login/login') {
-      wx.reLaunch({
-        url: '/pages/login/login'
-      });
+    try {
+      const pages = getCurrentPages();
+      const currentPage = pages[pages.length - 1];
+      
+      // 避免在登录页面重复跳转
+      if (currentPage && currentPage.route !== 'pages/login/login') {
+        wx.reLaunch({
+          url: '/pages/login/login',
+          success: () => {
+            console.log('跳转到登录页面成功');
+          },
+          fail: (error) => {
+            console.error('跳转到登录页面失败:', error);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('重定向到登录页面失败:', error);
     }
   },
 
