@@ -40,7 +40,7 @@ PORT=3000
 
 ```bash
 # 方法1: 通过API接口初始化
-curl -X POST https://your-app.railway.app/api/railway-init
+curl -X POST https://b2b-sales-miniprogram-production.up.railway.app/api/railway-init
 
 # 方法2: 通过Railway控制台运行
 npm run railway:init
@@ -60,7 +60,7 @@ npm run railway:init
 
 ```bash
 # 检查服务状态
-curl https://your-app.railway.app/api/health
+curl https://b2b-sales-miniprogram-production.up.railway.app/api/health
 
 # 初始化测试数据
 npm run railway:init
@@ -117,7 +117,7 @@ npm run create:testdata
 1. **微信开发者工具** 导入 `miniprogram` 目录
 2. **修改API地址** 在 `miniprogram/app.js` 中更新：
 ```javascript
-const API_BASE_URL = 'https://your-app.railway.app/api';
+const API_BASE_URL = 'https://b2b-sales-miniprogram-production.up.railway.app/api';
 ```
 
 ## 🔒 安全配置
