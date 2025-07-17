@@ -13,9 +13,11 @@
 
 在Railway项目的Variables页面添加以下环境变量：
 
+**⚠️ 重要：如果你的MongoDB服务显示连接失败，请确保在Railway控制台中正确设置了以下环境变量**
+
 ```bash
 # 必需的环境变量
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/b2b_sales
+MONGO_URL=mongodb://mongo:nroNxsYQYTDDMJYUUVJewtTmDywDsVrE@mongodb.railway.internal:27017
 JWT_SECRET=your_jwt_secret_key_here
 NODE_ENV=production
 
@@ -25,14 +27,17 @@ PORT=3000
 
 ### 3. 数据库配置
 
-#### 选项A: 使用Railway内置MongoDB
+#### 选项A: 使用Railway内置MongoDB (当前配置)
 1. 在项目中添加MongoDB服务
-2. Railway会自动生成`MONGODB_URI`
+2. 设置环境变量：
+   ```
+   MONGO_URL=mongodb://mongo:nroNxsYQYTDDMJYUUVJewtTmDywDsVrE@mongodb.railway.internal:27017
+   ```
 
-#### 选项B: 使用MongoDB Atlas (推荐)
+#### 选项B: 使用MongoDB Atlas
 1. 注册MongoDB Atlas账户
 2. 创建免费集群
-3. 获取连接字符串设置到`MONGODB_URI`
+3. 获取连接字符串设置到`MONGO_URL`
 
 ### 4. 初始化测试数据
 
@@ -166,9 +171,15 @@ GET /api/health
 
 1. **数据库连接失败**
 ```bash
-# 检查MONGODB_URI环境变量
-# 验证MongoDB集群状态
-# 检查IP白名单设置
+# 检查MONGO_URL环境变量是否正确设置
+# 确认MongoDB服务已在Railway中启动
+# 验证连接字符串格式：
+# mongodb://mongo:PASSWORD@mongodb.railway.internal:27017
+
+# 如果显示"数据库连接未就绪"，请在Railway控制台执行：
+# 1. 确认MongoDB服务正在运行
+# 2. 检查环境变量MONGO_URL是否正确
+# 3. 重新部署服务
 ```
 
 2. **API调用失败**
