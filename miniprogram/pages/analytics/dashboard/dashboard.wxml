@@ -1,0 +1,104 @@
+<view class="container">
+  <!-- 总览卡片 -->
+  <view class="overview-section">
+    <view class="overview-item">
+      <view class="overview-value">{{summary.totalRevenue}}</view>
+      <view class="overview-label">总营收</view>
+      <view class="overview-trend {{summary.revenueTrend >= 0 ? 'up' : 'down'}}">
+        {{summary.revenueTrend >= 0 ? '+' : ''}}{{summary.revenueTrend}}%
+      </view>
+    </view>
+    <view class="overview-item">
+      <view class="overview-value">{{summary.totalOrders}}</view>
+      <view class="overview-label">订单总数</view>
+      <view class="overview-trend {{summary.orderTrend >= 0 ? 'up' : 'down'}}">
+        {{summary.orderTrend >= 0 ? '+' : ''}}{{summary.orderTrend}}%
+      </view>
+    </view>
+    <view class="overview-item">
+      <view class="overview-value">{{summary.activeStores}}</view>
+      <view class="overview-label">活跃门店</view>
+      <view class="overview-trend {{summary.storeTrend >= 0 ? 'up' : 'down'}}">
+        {{summary.storeTrend >= 0 ? '+' : ''}}{{summary.storeTrend}}%
+      </view>
+    </view>
+  </view>
+
+  <!-- 时间筛选 -->
+  <view class="time-filter">
+    <view class="filter-item {{timeRange === 'week' ? 'active' : ''}}" bindtap="switchTimeRange" data-range="week">
+      本周
+    </view>
+    <view class="filter-item {{timeRange === 'month' ? 'active' : ''}}" bindtap="switchTimeRange" data-range="month">
+      本月
+    </view>
+    <view class="filter-item {{timeRange === 'quarter' ? 'active' : ''}}" bindtap="switchTimeRange" data-range="quarter">
+      本季度
+    </view>
+    <view class="filter-item {{timeRange === 'year' ? 'active' : ''}}" bindtap="switchTimeRange" data-range="year">
+      本年
+    </view>
+  </view>
+
+  <!-- 销售趋势图 -->
+  <view class="chart-section">
+    <view class="section-title">销售趋势</view>
+    <view class="chart-container">
+      <canvas canvas-id="salesChart" class="chart" disable-scroll="true"></canvas>
+    </view>
+  </view>
+
+  <!-- 门店排行 -->
+  <view class="ranking-section">
+    <view class="section-title">门店排行榜</view>
+    <view class="ranking-list" wx:if="{{storeRanking.length > 0}}">
+      <view class="ranking-item" wx:for="{{storeRanking}}" wx:key="_id">
+        <view class="rank-number rank-{{index + 1}}">{{index + 1}}</view>
+        <view class="store-info">
+          <view class="store-name">{{item.storeName}}</view>
+          <view class="store-location">{{item.region}}</view>
+        </view>
+        <view class="store-performance">
+          <view class="performance-value">{{item.totalAmount}}</view>
+          <view class="performance-label">销售额</view>
+        </view>
+      </view>
+    </view>
+    <view class="empty-state" wx:else>
+      <view class="empty-text">暂无排行数据</view>
+    </view>
+  </view>
+
+  <!-- 产品分析 -->
+  <view class="product-section">
+    <view class="section-title">热销产品</view>
+    <view class="product-list" wx:if="{{topProducts.length > 0}}">
+      <view class="product-item" wx:for="{{topProducts}}" wx:key="_id">
+        <view class="product-image">
+          <image src="{{item.image || '/assets/images/default-product.png'}}" mode="aspectFill" />
+        </view>
+        <view class="product-info">
+          <view class="product-name">{{item.name}}</view>
+          <view class="product-category">{{item.category}}</view>
+        </view>
+        <view class="product-stats">
+          <view class="sales-count">销量: {{item.salesCount}}</view>
+          <view class="sales-amount">金额: {{item.salesAmount}}</view>
+        </view>
+      </view>
+    </view>
+    <view class="empty-state" wx:else>
+      <view class="empty-text">暂无产品数据</view>
+    </view>
+  </view>
+
+  <!-- 数据导出 -->
+  <view class="export-section">
+    <view class="section-title">数据导出</view>
+    <view class="export-buttons">
+      <button class="export-btn" bindtap="exportSalesData">导出销售数据</button>
+      <button class="export-btn" bindtap="exportStoreData">导出门店数据</button>
+      <button class="export-btn" bindtap="exportProductData">导出产品数据</button>
+    </view>
+  </view>
+</view>

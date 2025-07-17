@@ -42,10 +42,24 @@ router.get('/', authenticateToken, async (req, res) => {
     const categories = await Product.distinct('category.primary', { isActive: true });
     const brands = await Product.distinct('brand', { isActive: true });
 
+    // 获取统计数据
+    const [categoryCount, lowStockCount] = await Promise.all([
+      Product.distinct('category.primary', { isActive: true }).then(cats => cats.length),
+      Product.countDocuments({ 
+        isActive: true, 
+        $expr: { $lte: ['$inventory.availableStock', '$inventory.safetyStock'] } 
+      })
+    ]);
+
     res.json({
       success: true,
       data: {
         products,
+        total,
+        stats: {
+          categories: categoryCount,
+          lowStock: lowStockCount
+        },
         pagination: {
           current: parseInt(page),
           pageSize: parseInt(limit),
@@ -180,6 +194,25 @@ router.get('/stats/top-selling', authenticateToken, async (req, res) => {
     res.status(500).json({ 
       success: false, 
       message: '获取热销产品失败' 
+    });
+  }
+});
+
+// 获取产品分类列表（小程序用）
+router.get('/categories', authenticateToken, async (req, res) => {
+  try {
+    const categories = await Product.distinct('category.primary', { isActive: true });
+    
+    res.json({
+      success: true,
+      data: { categories }
+    });
+
+  } catch (error) {
+    console.error('获取分类列表错误:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: '获取分类列表失败' 
     });
   }
 });

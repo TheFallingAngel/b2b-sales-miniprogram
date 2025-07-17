@@ -1,0 +1,67 @@
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-section">
+    <view class="search-bar">
+      <input placeholder="搜索门店名称" value="{{searchText}}" bindinput="onSearchInput" />
+      <button class="search-btn" bindtap="onSearch">搜索</button>
+    </view>
+  </view>
+
+  <!-- 筛选标签 -->
+  <view class="filter-tabs">
+    <view class="tab {{activeTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">
+      全部 <text class="count">{{storeStats.total}}</text>
+    </view>
+    <view class="tab {{activeTab === 'active' ? 'active' : ''}}" bindtap="switchTab" data-tab="active">
+      活跃客户 <text class="count">{{storeStats.active}}</text>
+    </view>
+    <view class="tab {{activeTab === 'potential' ? 'active' : ''}}" bindtap="switchTab" data-tab="potential">
+      潜在客户 <text class="count">{{storeStats.potential}}</text>
+    </view>
+  </view>
+
+  <!-- 门店列表 -->
+  <view class="store-list" wx:if="{{stores.length > 0}}">
+    <view class="store-item" wx:for="{{stores}}" wx:key="_id" bindtap="navigateToDetail" data-id="{{item._id}}">
+      <view class="store-header">
+        <view class="store-name">{{item.storeName}}</view>
+        <view class="store-status {{item.statusClass}}">{{item.businessStatus}}</view>
+      </view>
+      <view class="store-info">
+        <view class="info-item">
+          <text class="label">联系人：</text>
+          <text class="value">{{item.contactPerson}}</text>
+        </view>
+        <view class="info-item">
+          <text class="label">电话：</text>
+          <text class="value">{{item.phone}}</text>
+        </view>
+        <view class="info-item">
+          <text class="label">地址：</text>
+          <text class="value">{{item.address}}</text>
+        </view>
+      </view>
+      <view class="store-footer">
+        <view class="last-visit">
+          上次拜访：{{item.lastVisitTime || '暂无记录'}}
+        </view>
+        <view class="actions">
+          <button class="action-btn visit" bindtap="visitStore" data-id="{{item._id}}" catchtap="true">拜访</button>
+          <button class="action-btn order" bindtap="createOrder" data-id="{{item._id}}" catchtap="true">下单</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <view class="empty-icon">🏪</view>
+    <view class="empty-text">暂无门店数据</view>
+    <button class="add-btn" bindtap="navigateToAdd">添加门店</button>
+  </view>
+
+  <!-- 添加按钮 -->
+  <view class="fab" bindtap="navigateToAdd">
+    <text class="plus">+</text>
+  </view>
+</view>

@@ -1,0 +1,65 @@
+<view class="container">
+  <!-- 头部统计 -->
+  <view class="stats-section">
+    <view class="stat-item">
+      <view class="stat-value">{{productStats.total}}</view>
+      <view class="stat-label">商品总数</view>
+    </view>
+    <view class="stat-item">
+      <view class="stat-value">{{productStats.categories}}</view>
+      <view class="stat-label">商品类目</view>
+    </view>
+    <view class="stat-item">
+      <view class="stat-value">{{productStats.lowStock}}</view>
+      <view class="stat-label">低库存</view>
+    </view>
+  </view>
+
+  <!-- 搜索和筛选 -->
+  <view class="search-section">
+    <view class="search-bar">
+      <input placeholder="搜索商品名称" value="{{searchText}}" bindinput="onSearchInput" />
+      <button class="search-btn" bindtap="onSearch">搜索</button>
+    </view>
+    <view class="filter-bar">
+      <picker bindchange="onCategoryChange" value="{{categoryIndex}}" range="{{categoryList}}" range-key="name">
+        <view class="picker">
+          {{categoryList[categoryIndex].name}}
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 商品列表 -->
+  <view class="product-list" wx:if="{{products.length > 0}}">
+    <view class="product-item" wx:for="{{products}}" wx:key="_id" bindtap="navigateToDetail" data-id="{{item._id}}">
+      <view class="product-image">
+        <image src="{{item.images[0] || '/assets/images/default-product.png'}}" mode="aspectFill" />
+        <view class="stock-badge {{item.stock <= item.minStock ? 'low' : 'normal'}}">
+          库存{{item.stock}}
+        </view>
+      </view>
+      <view class="product-info">
+        <view class="product-name">{{item.name}}</view>
+        <view class="product-category">{{item.category}}</view>
+        <view class="product-price">
+          <text class="current-price">￥{{item.price}}</text>
+          <text class="unit">/{{item.unit}}</text>
+        </view>
+        <view class="product-stats">
+          <text class="sales">销量 {{item.salesCount || 0}}</text>
+          <text class="rating" wx:if="{{item.rating}}">评分 {{item.rating}}</text>
+        </view>
+      </view>
+      <view class="product-actions">
+        <button class="action-btn" bindtap="addToCart" data-product="{{item}}" catchtap="true">加入购物车</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <view class="empty-icon">📱</view>
+    <view class="empty-text">暂无商品数据</view>
+  </view>
+</view>

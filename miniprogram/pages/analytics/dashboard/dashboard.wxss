@@ -1,0 +1,279 @@
+/* pages/analytics/dashboard/dashboard.wxss */
+.container {
+  padding: 20rpx;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* 总览卡片 */
+.overview-section {
+  display: flex;
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.overview-item {
+  flex: 1;
+  text-align: center;
+  border-right: 1rpx solid #f0f0f0;
+  position: relative;
+}
+
+.overview-item:last-child {
+  border-right: none;
+}
+
+.overview-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.overview-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 15rpx;
+}
+
+.overview-trend {
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.overview-trend.up {
+  color: #52c41a;
+  background: #f6ffed;
+}
+
+.overview-trend.down {
+  color: #f5222d;
+  background: #fff2f0;
+}
+
+/* 时间筛选 */
+.time-filter {
+  display: flex;
+  background: white;
+  border-radius: 20rpx;
+  padding: 10rpx;
+  margin-bottom: 30rpx;
+}
+
+.filter-item {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  border-radius: 15rpx;
+}
+
+.filter-item.active {
+  color: #2E7CE8;
+  background: #f0f8ff;
+}
+
+/* 图表区域 */
+.chart-section {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30rpx;
+}
+
+.chart-container {
+  width: 100%;
+  height: 400rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+}
+
+/* 门店排行 */
+.ranking-section {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.ranking-list {
+  margin-top: 20rpx;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.ranking-item:last-child {
+  border-bottom: none;
+}
+
+.rank-number {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  color: white;
+  margin-right: 20rpx;
+}
+
+.rank-number.rank-1 { background: #f5222d; }
+.rank-number.rank-2 { background: #fa8c16; }
+.rank-number.rank-3 { background: #faad14; }
+.rank-number:not(.rank-1):not(.rank-2):not(.rank-3) { 
+  background: #d9d9d9; 
+  color: #666;
+}
+
+.store-info {
+  flex: 1;
+}
+
+.store-name {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.store-location {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.store-performance {
+  text-align: right;
+}
+
+.performance-value {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.performance-label {
+  font-size: 22rpx;
+  color: #999;
+}
+
+/* 产品分析 */
+.product-section {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.product-list {
+  margin-top: 20rpx;
+}
+
+.product-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.product-item:last-child {
+  border-bottom: none;
+}
+
+.product-image {
+  width: 80rpx;
+  height: 80rpx;
+  margin-right: 20rpx;
+}
+
+.product-image image {
+  width: 100%;
+  height: 100%;
+  border-radius: 8rpx;
+}
+
+.product-info {
+  flex: 1;
+}
+
+.product-name {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.product-category {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.product-stats {
+  text-align: right;
+}
+
+.sales-count, .sales-amount {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 5rpx;
+}
+
+/* 数据导出 */
+.export-section {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+}
+
+.export-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.export-btn {
+  background: #f0f8ff;
+  color: #2E7CE8;
+  border: 1rpx solid #2E7CE8;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+}
+
+.export-btn:active {
+  background: #e6f7ff;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 60rpx 0;
+  color: #999;
+}
+
+.empty-text {
+  font-size: 28rpx;
+}

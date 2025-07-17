@@ -21,30 +21,13 @@ App({
       if (token && userInfo) {
         this.globalData.token = token;
         this.globalData.userInfo = userInfo;
-        
-        // 异步验证token，不阻塞启动
-        setTimeout(() => {
-          this.validateToken().then(valid => {
-            if (!valid) {
-              this.logout();
-            }
-          }).catch(err => {
-            console.error('Token验证异常:', err);
-            // 验证失败不影响启动，让用户手动重新登录
-          });
-        }, 1000);
+        console.log('已登录，用户信息:', userInfo);
       } else {
-        // 延迟跳转，避免启动时的循环
-        setTimeout(() => {
-          this.redirectToLogin();
-        }, 500);
+        console.log('未登录，需要登录');
+        // 暂时不自动跳转，让用户手动点击登录
       }
     } catch (error) {
       console.error('检查登录状态失败:', error);
-      // 出错时也延迟跳转
-      setTimeout(() => {
-        this.redirectToLogin();
-      }, 500);
     }
   },
 

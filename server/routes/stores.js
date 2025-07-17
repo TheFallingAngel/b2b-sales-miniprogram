@@ -57,10 +57,32 @@ router.get('/', authenticateToken, async (req, res) => {
 
     const total = await Store.countDocuments(query);
 
+    // 获取统计数据
+    const stats = await Store.aggregate([
+      { $match: { salesRep: req.user.userId } },
+      {
+        $group: {
+          _id: '$businessStatus',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const statsMap = {};
+    stats.forEach(stat => {
+      statsMap[stat._id] = stat.count;
+    });
+
     res.json({
       success: true,
       data: {
         stores,
+        total,
+        stats: {
+          active: statsMap['活跃客户'] || 0,
+          potential: statsMap['潜在客户'] || 0,
+          inactive: statsMap['流失客户'] || 0
+        },
         pagination: {
           current: parseInt(page),
           pageSize: parseInt(limit),

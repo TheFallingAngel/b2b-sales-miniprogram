@@ -60,10 +60,49 @@ router.get('/', authenticateToken, async (req, res) => {
 
     const total = await Order.countDocuments(query);
 
+    // 获取订单统计数据
+    const stats = await Order.aggregate([
+      { $match: { salesRep: req.user.userId } },
+      {
+        $group: {
+          _id: '$orderStatus',
+          count: { $sum: 1 },
+          totalAmount: { $sum: '$orderSummary.totalAmount' }
+        }
+      }
+    ]);
+
+    const orderStats = {
+      total: 0,
+      pending: 0,
+      confirmed: 0,
+      shipped: 0,
+      totalAmount: 0
+    };
+
+    stats.forEach(stat => {
+      orderStats.total += stat.count;
+      orderStats.totalAmount += stat.totalAmount;
+      
+      switch(stat._id) {
+        case '待确认':
+          orderStats.pending = stat.count;
+          break;
+        case '已确认':
+          orderStats.confirmed = stat.count;
+          break;
+        case '已发货':
+          orderStats.shipped = stat.count;
+          break;
+      }
+    });
+
     res.json({
       success: true,
       data: {
         orders,
+        total,
+        stats: orderStats,
         pagination: {
           current: parseInt(page),
           pageSize: parseInt(limit),
@@ -246,6 +285,92 @@ router.get('/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ 
       success: false, 
       message: '获取订单详情失败' 
+    });
+  }
+});
+
+// 确认订单
+router.put('/:id/confirm', authenticateToken, async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      _id: req.params.id,
+      salesRep: req.user.userId
+    });
+
+    if (!order) {
+      return res.status(404).json({ 
+        success: false, 
+        message: '订单不存在或无权限修改' 
+      });
+    }
+
+    order.orderStatus = '已确认';
+    order.statusHistory.push({
+      status: '已确认',
+      notes: '订单已确认',
+      operator: req.user.userId
+    });
+
+    await order.save();
+
+    res.json({
+      success: true,
+      message: '订单确认成功',
+      data: { 
+        orderStatus: order.orderStatus,
+        statusHistory: order.statusHistory
+      }
+    });
+
+  } catch (error) {
+    console.error('确认订单错误:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: '确认订单失败' 
+    });
+  }
+});
+
+// 拒绝订单
+router.put('/:id/reject', authenticateToken, async (req, res) => {
+  try {
+    const { reason } = req.body;
+    
+    const order = await Order.findOne({
+      _id: req.params.id,
+      salesRep: req.user.userId
+    });
+
+    if (!order) {
+      return res.status(404).json({ 
+        success: false, 
+        message: '订单不存在或无权限修改' 
+      });
+    }
+
+    order.orderStatus = '已取消';
+    order.statusHistory.push({
+      status: '已取消',
+      notes: reason || '订单被拒绝',
+      operator: req.user.userId
+    });
+
+    await order.save();
+
+    res.json({
+      success: true,
+      message: '订单已拒绝',
+      data: { 
+        orderStatus: order.orderStatus,
+        statusHistory: order.statusHistory
+      }
+    });
+
+  } catch (error) {
+    console.error('拒绝订单错误:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: '拒绝订单失败' 
     });
   }
 });

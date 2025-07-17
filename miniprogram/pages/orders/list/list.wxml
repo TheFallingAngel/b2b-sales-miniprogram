@@ -1,0 +1,72 @@
+<view class="container">
+  <!-- 状态统计 -->
+  <view class="stats-section">
+    <view class="stat-item">
+      <view class="stat-value">{{orderStats.total}}</view>
+      <view class="stat-label">订单总数</view>
+    </view>
+    <view class="stat-item">
+      <view class="stat-value">{{orderStats.pending}}</view>
+      <view class="stat-label">待处理</view>
+    </view>
+    <view class="stat-item">
+      <view class="stat-value">{{orderStats.totalAmount}}</view>
+      <view class="stat-label">总金额</view>
+    </view>
+  </view>
+
+  <!-- 状态筛选 -->
+  <view class="filter-tabs">
+    <view class="tab {{activeTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">
+      全部 <text class="count">{{orderStats.total}}</text>
+    </view>
+    <view class="tab {{activeTab === 'pending' ? 'active' : ''}}" bindtap="switchTab" data-tab="pending">
+      待确认 <text class="count">{{orderStats.pending}}</text>
+    </view>
+    <view class="tab {{activeTab === 'confirmed' ? 'active' : ''}}" bindtap="switchTab" data-tab="confirmed">
+      已确认 <text class="count">{{orderStats.confirmed}}</text>
+    </view>
+    <view class="tab {{activeTab === 'shipped' ? 'active' : ''}}" bindtap="switchTab" data-tab="shipped">
+      已发货 <text class="count">{{orderStats.shipped}}</text>
+    </view>
+  </view>
+
+  <!-- 订单列表 -->
+  <view class="order-list" wx:if="{{orders.length > 0}}">
+    <view class="order-item" wx:for="{{orders}}" wx:key="_id" bindtap="navigateToDetail" data-id="{{item._id}}">
+      <view class="order-header">
+        <view class="order-number">{{item.orderNumber}}</view>
+        <view class="order-status {{item.statusClass}}">{{item.orderStatus}}</view>
+      </view>
+      <view class="order-store">
+        <text class="store-name">{{item.store.storeName}}</text>
+        <text class="store-contact">{{item.store.contactPerson}}</text>
+      </view>
+      <view class="order-items">
+        <view class="item-summary" wx:for="{{item.orderSummary.items}}" wx:for-item="product" wx:key="productId">
+          {{product.productName}} x{{product.quantity}}
+        </view>
+      </view>
+      <view class="order-footer">
+        <view class="order-time">{{item.createdAtFormatted}}</view>
+        <view class="order-amount">￥{{item.orderSummary.totalAmount}}</view>
+      </view>
+      <view class="order-actions" wx:if="{{item.orderStatus === '待确认'}}">
+        <button class="action-btn reject" bindtap="rejectOrder" data-id="{{item._id}}" catchtap="true">拒绝</button>
+        <button class="action-btn confirm" bindtap="confirmOrder" data-id="{{item._id}}" catchtap="true">确认</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <view class="empty-icon">📋</view>
+    <view class="empty-text">暂无订单数据</view>
+    <button class="add-btn" bindtap="navigateToCreate">创建订单</button>
+  </view>
+
+  <!-- 创建订单按钮 -->
+  <view class="fab" bindtap="navigateToCreate">
+    <text class="plus">+</text>
+  </view>
+</view>

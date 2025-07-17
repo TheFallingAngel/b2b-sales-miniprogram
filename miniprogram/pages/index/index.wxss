@@ -1,0 +1,452 @@
+/* pages/index/index.wxss */
+.container {
+  padding: 0 0 20rpx 0;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* 登录提示样式保持不变 */
+.login-prompt {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prompt-content {
+  text-align: center;
+  padding: 60rpx 40rpx;
+}
+
+.prompt-logo {
+  width: 120rpx;
+  height: 120rpx;
+  margin: 0 auto 40rpx;
+}
+
+.prompt-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.prompt-desc {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 60rpx;
+  line-height: 1.6;
+}
+
+.login-button {
+  width: 400rpx;
+  height: 88rpx;
+  background: #2E7CE8;
+  color: white;
+  border: none;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.login-button:active {
+  background: #1769D0;
+}
+
+/* 头部区域 */
+.header-section {
+  background: linear-gradient(135deg, #2E7CE8, #4A9EFF);
+  padding: 40rpx 30rpx 30rpx;
+  color: white;
+}
+
+.user-greeting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.greeting-text .welcome {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.greeting-text .date {
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+.user-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  border: 3rpx solid rgba(255,255,255,0.3);
+}
+
+/* 今日统计 */
+.today-stats {
+  background: white;
+  border-radius: 20rpx;
+  margin: -20rpx 20rpx 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+}
+
+.stats-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30rpx;
+}
+
+.stats-grid {
+  display: flex;
+  justify-content: space-between;
+}
+
+.stat-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #2E7CE8;
+  margin-bottom: 10rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 快捷操作 */
+.quick-actions {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin: 0 20rpx 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30rpx;
+}
+
+.actions-grid {
+  display: flex;
+  justify-content: space-between;
+}
+
+.action-item {
+  text-align: center;
+  width: 22%;
+}
+
+.action-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  margin: 0 auto 15rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 36rpx;
+}
+
+.action-text {
+  font-size: 24rpx;
+  color: #333;
+}
+
+/* 业绩概览 */
+.performance-section {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin: 0 20rpx 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+}
+
+.performance-card {
+  background: linear-gradient(135deg, #f6ffed, #e6f7ff);
+  border-radius: 15rpx;
+  padding: 30rpx;
+  margin-top: 20rpx;
+}
+
+.performance-main {
+  margin-bottom: 20rpx;
+}
+
+.current-amount {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #52c41a;
+  margin-bottom: 10rpx;
+}
+
+.target-info {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.performance-progress {
+  margin-bottom: 15rpx;
+}
+
+.progress-bar {
+  height: 12rpx;
+  background: #f0f0f0;
+  border-radius: 6rpx;
+  overflow: hidden;
+  margin-bottom: 10rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #52c41a, #73d13d);
+  border-radius: 6rpx;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.performance-ranking {
+  font-size: 26rpx;
+  color: #2E7CE8;
+  font-weight: bold;
+}
+
+/* 业务数据 */
+.business-data {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin: 0 20rpx 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+}
+
+.data-grid {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20rpx;
+}
+
+.data-item {
+  text-align: center;
+  flex: 1;
+  padding: 20rpx 0;
+  border-radius: 12rpx;
+  background: #fafafa;
+  margin: 0 5rpx;
+}
+
+.data-value {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.data-label {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 5rpx;
+}
+
+.data-sub {
+  font-size: 20rpx;
+  color: #999;
+}
+
+/* 今日安排 */
+.today-schedule {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin: 0 20rpx 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+}
+
+.schedule-list {
+  margin-top: 20rpx;
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.schedule-item:last-child {
+  border-bottom: none;
+}
+
+.schedule-time {
+  width: 120rpx;
+  font-size: 26rpx;
+  color: #666;
+  font-weight: bold;
+}
+
+.schedule-content {
+  flex: 1;
+  margin-left: 20rpx;
+}
+
+.schedule-title {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 5rpx;
+}
+
+.schedule-desc {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.schedule-status {
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+  color: white;
+}
+
+.schedule-status.completed { background: #52c41a; }
+.schedule-status.pending { background: #faad14; }
+
+/* 待办事项 */
+.todo-section {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin: 0 20rpx 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.todo-count {
+  background: #ff4d4f;
+  color: white;
+  font-size: 20rpx;
+  padding: 4rpx 8rpx;
+  border-radius: 10rpx;
+  margin-left: 10rpx;
+}
+
+.todo-list {
+  margin-top: 20rpx;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.todo-item:last-child {
+  border-bottom: none;
+}
+
+.todo-icon {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  font-size: 28rpx;
+}
+
+.todo-icon.high { background: #fff2f0; }
+.todo-icon.medium { background: #fffbe6; }
+.todo-icon.low { background: #f6ffed; }
+
+.todo-content {
+  flex: 1;
+}
+
+.todo-title {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.todo-desc {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.todo-time {
+  font-size: 22rpx;
+  color: #ccc;
+}
+
+/* 消息通知 */
+.notifications {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin: 0 20rpx 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+}
+
+.notification-list {
+  margin-top: 20rpx;
+}
+
+.notification-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-icon {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: #f0f8ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  font-size: 28rpx;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-title {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 5rpx;
+}
+
+.notification-time {
+  font-size: 22rpx;
+  color: #999;
+}

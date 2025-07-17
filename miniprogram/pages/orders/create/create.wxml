@@ -1,0 +1,242 @@
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">创建订单</view>
+    <view class="page-desc">为客户创建新订单</view>
+  </view>
+
+  <!-- 选择门店 -->
+  <view class="form-section">
+    <view class="section-title">选择门店</view>
+    <view class="store-selector" bindtap="selectStore">
+      <view class="store-info" wx:if="{{selectedStore}}">
+        <view class="store-name">{{selectedStore.storeName}}</view>
+        <view class="store-contact">{{selectedStore.owner.name}} - {{selectedStore.owner.phone}}</view>
+        <view class="store-address">{{selectedStore.address.street}}</view>
+      </view>
+      <view class="store-placeholder" wx:else>
+        <text class="placeholder-text">点击选择门店</text>
+        <text class="placeholder-icon">></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 商品列表 -->
+  <view class="form-section">
+    <view class="section-title">
+      <text>选择商品</text>
+      <button class="add-product-btn" bindtap="addProduct">添加商品</button>
+    </view>
+    
+    <view class="product-list" wx:if="{{orderItems.length > 0}}">
+      <view class="product-item" wx:for="{{orderItems}}" wx:key="id" wx:for-item="item">
+        <view class="product-info">
+          <image class="product-image" src="{{item.product.images[0] || '/assets/images/default-product.png'}}" mode="aspectFill" />
+          <view class="product-details">
+            <view class="product-name">{{item.product.productName}}</view>
+            <view class="product-code">{{item.product.productCode}}</view>
+            <view class="product-price">￥{{item.unitPrice}}/{{item.product.unit}}</view>
+            <view class="product-stock">库存：{{item.product.inventory.availableStock}}</view>
+          </view>
+        </view>
+        
+        <view class="quantity-controls">
+          <view class="quantity-label">数量</view>
+          <view class="quantity-selector">
+            <button class="quantity-btn" bindtap="changeQuantity" data-index="{{index}}" data-action="minus">-</button>
+            <input 
+              class="quantity-input" 
+              type="number" 
+              value="{{item.quantity}}" 
+              bindinput="onQuantityInput"
+              data-index="{{index}}"
+            />
+            <button class="quantity-btn" bindtap="changeQuantity" data-index="{{index}}" data-action="plus">+</button>
+          </view>
+        </view>
+        
+        <view class="item-actions">
+          <view class="item-total">小计：￥{{item.totalPrice}}</view>
+          <button class="remove-btn" bindtap="removeItem" data-index="{{index}}">移除</button>
+        </view>
+      </view>
+    </view>
+    
+    <view class="empty-products" wx:else>
+      <view class="empty-icon">📦</view>
+      <view class="empty-text">还没有选择商品</view>
+      <button class="add-first-product" bindtap="addProduct">选择商品</button>
+    </view>
+  </view>
+
+  <!-- 订单信息 -->
+  <view class="form-section" wx:if="{{orderItems.length > 0}}">
+    <view class="section-title">订单信息</view>
+    
+    <view class="form-item">
+      <view class="form-label">订单类型</view>
+      <picker bindchange="onOrderTypeChange" value="{{orderTypeIndex}}" range="{{orderTypes}}">
+        <view class="picker">
+          {{orderTypes[orderTypeIndex] || '请选择订单类型'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">支付方式</view>
+      <picker bindchange="onPaymentMethodChange" value="{{paymentMethodIndex}}" range="{{paymentMethods}}">
+        <view class="picker">
+          {{paymentMethods[paymentMethodIndex] || '请选择支付方式'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">配送方式</view>
+      <picker bindchange="onDeliveryMethodChange" value="{{deliveryMethodIndex}}" range="{{deliveryMethods}}">
+        <view class="picker">
+          {{deliveryMethods[deliveryMethodIndex] || '请选择配送方式'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item" wx:if="{{formData.deliveryMethod === '送货上门'}}">
+      <view class="form-label">配送地址</view>
+      <textarea 
+        class="form-textarea" 
+        placeholder="请输入配送地址" 
+        value="{{formData.deliveryAddress}}" 
+        bindinput="onDeliveryAddressInput"
+        maxlength="200"
+      />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">预计配送时间</view>
+      <picker 
+        mode="date" 
+        start="{{todayDate}}"
+        bindchange="onDeliveryDateChange" 
+        value="{{formData.plannedDeliveryDate}}"
+      >
+        <view class="picker">
+          {{formData.plannedDeliveryDate || '请选择配送时间'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item" wx:if="{{formData.paymentMethod === '赊账'}}">
+      <view class="form-label">账期天数</view>
+      <input 
+        class="form-input" 
+        type="number" 
+        placeholder="请输入账期天数" 
+        value="{{formData.creditDays}}" 
+        bindinput="onCreditDaysInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">备注</view>
+      <textarea 
+        class="form-textarea" 
+        placeholder="请输入订单备注（选填）" 
+        value="{{formData.notes}}" 
+        bindinput="onNotesInput"
+        maxlength="500"
+      />
+    </view>
+  </view>
+
+  <!-- 订单汇总 -->
+  <view class="order-summary" wx:if="{{orderItems.length > 0}}">
+    <view class="summary-title">订单汇总</view>
+    <view class="summary-row">
+      <text class="label">商品数量</text>
+      <text class="value">{{totalQuantity}}件</text>
+    </view>
+    <view class="summary-row">
+      <text class="label">商品小计</text>
+      <text class="value">￥{{subtotal}}</text>
+    </view>
+    <view class="summary-row">
+      <text class="label">配送费用</text>
+      <text class="value">￥{{deliveryFee}}</text>
+    </view>
+    <view class="summary-row total">
+      <text class="label">订单总额</text>
+      <text class="value">￥{{totalAmount}}</text>
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-section">
+    <button 
+      class="submit-btn {{canSubmit ? '' : 'disabled'}}" 
+      bindtap="submitOrder"
+      disabled="{{!canSubmit || submitting}}"
+    >
+      {{submitting ? '提交中...' : '创建订单'}}
+    </button>
+  </view>
+</view>
+
+<!-- 门店选择弹窗 -->
+<view class="modal" wx:if="{{showStoreModal}}" bindtap="hideStoreModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">选择门店</text>
+      <button class="modal-close" bindtap="hideStoreModal">×</button>
+    </view>
+    <view class="store-list">
+      <view 
+        class="modal-store-item {{item._id === selectedStore?._id ? 'selected' : ''}}" 
+        wx:for="{{storeList}}" 
+        wx:key="_id"
+        bindtap="selectStoreFromModal"
+        data-store="{{item}}"
+      >
+        <view class="store-name">{{item.storeName}}</view>
+        <view class="store-contact">{{item.owner.name}} - {{item.owner.phone}}</view>
+        <view class="store-address">{{item.address.street}}</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 商品选择弹窗 -->
+<view class="modal" wx:if="{{showProductModal}}" bindtap="hideProductModal">
+  <view class="modal-content product-modal" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">选择商品</text>
+      <button class="modal-close" bindtap="hideProductModal">×</button>
+    </view>
+    
+    <view class="product-search">
+      <input 
+        class="search-input" 
+        placeholder="搜索商品名称" 
+        value="{{productSearchText}}" 
+        bindinput="onProductSearchInput"
+      />
+    </view>
+    
+    <view class="product-modal-list">
+      <view 
+        class="modal-product-item" 
+        wx:for="{{productList}}" 
+        wx:key="_id"
+        bindtap="selectProductFromModal"
+        data-product="{{item}}"
+      >
+        <image class="product-image" src="{{item.images[0] || '/assets/images/default-product.png'}}" mode="aspectFill" />
+        <view class="product-info">
+          <view class="product-name">{{item.productName}}</view>
+          <view class="product-code">{{item.productCode}}</view>
+          <view class="product-price">￥{{item.pricing.wholesalePrice}}/{{item.unit}}</view>
+          <view class="product-stock">库存：{{item.inventory.availableStock}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

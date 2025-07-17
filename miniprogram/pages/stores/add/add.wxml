@@ -1,0 +1,207 @@
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">新增门店</view>
+    <view class="page-desc">请填写完整的门店信息</view>
+  </view>
+
+  <!-- 表单内容 -->
+  <form bindsubmit="handleSubmit">
+    <!-- 基本信息 -->
+    <view class="form-section">
+      <view class="section-title">基本信息</view>
+      
+      <view class="form-item">
+        <view class="form-label required">门店名称</view>
+        <input 
+          class="form-input" 
+          name="storeName"
+          placeholder="请输入门店名称" 
+          value="{{formData.storeName}}" 
+          bindinput="onInputChange"
+          data-field="storeName"
+        />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label required">门店类型</view>
+        <picker 
+          bindchange="onPickerChange" 
+          value="{{storeTypeIndex}}" 
+          range="{{storeTypes}}"
+          data-field="storeType"
+        >
+          <view class="picker">
+            {{storeTypes[storeTypeIndex] || '请选择门店类型'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">门店规模</view>
+        <picker 
+          bindchange="onPickerChange" 
+          value="{{storeSizeIndex}}" 
+          range="{{storeSizes}}"
+          data-field="storeSize"
+        >
+          <view class="picker">
+            {{storeSizes[storeSizeIndex] || '请选择门店规模'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">月营业额</view>
+        <picker 
+          bindchange="onPickerChange" 
+          value="{{revenueIndex}}" 
+          range="{{revenueRanges}}"
+          data-field="monthlyRevenue"
+        >
+          <view class="picker">
+            {{revenueRanges[revenueIndex] || '请选择月营业额范围'}}
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 负责人信息 -->
+    <view class="form-section">
+      <view class="section-title">负责人信息</view>
+      
+      <view class="form-item">
+        <view class="form-label required">负责人姓名</view>
+        <input 
+          class="form-input" 
+          name="ownerName"
+          placeholder="请输入负责人姓名" 
+          value="{{formData.owner.name}}" 
+          bindinput="onInputChange"
+          data-field="owner.name"
+        />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label required">手机号码</view>
+        <input 
+          class="form-input" 
+          name="ownerPhone"
+          type="number"
+          maxlength="11"
+          placeholder="请输入手机号码" 
+          value="{{formData.owner.phone}}" 
+          bindinput="onInputChange"
+          data-field="owner.phone"
+        />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">身份证号</view>
+        <input 
+          class="form-input" 
+          name="ownerIdCard"
+          placeholder="请输入身份证号（选填）" 
+          value="{{formData.owner.idCard}}" 
+          bindinput="onInputChange"
+          data-field="owner.idCard"
+        />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">微信号</view>
+        <input 
+          class="form-input" 
+          name="ownerWechat"
+          placeholder="请输入微信号（选填）" 
+          value="{{formData.owner.wechat}}" 
+          bindinput="onInputChange"
+          data-field="owner.wechat"
+        />
+      </view>
+    </view>
+
+    <!-- 地址信息 -->
+    <view class="form-section">
+      <view class="section-title">地址信息</view>
+      
+      <view class="form-item">
+        <view class="form-label required">省市区</view>
+        <view class="region-picker">
+          <picker 
+            mode="region" 
+            bindchange="onRegionChange" 
+            value="{{region}}"
+          >
+            <view class="picker">
+              {{regionText || '请选择省市区'}}
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <view class="form-label required">详细地址</view>
+        <textarea 
+          class="form-textarea" 
+          name="street"
+          placeholder="请输入详细地址" 
+          value="{{formData.address.street}}" 
+          bindinput="onInputChange"
+          data-field="address.street"
+          maxlength="200"
+        />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">获取定位</view>
+        <button class="location-btn" bindtap="getLocation" type="default">
+          {{locationText}}
+        </button>
+      </view>
+    </view>
+
+    <!-- 营业信息 -->
+    <view class="form-section">
+      <view class="section-title">营业信息</view>
+      
+      <view class="form-item">
+        <view class="form-label">营业时间</view>
+        <view class="time-picker-group">
+          <picker 
+            mode="time" 
+            bindchange="onTimeChange" 
+            value="{{openTime}}"
+            data-field="open"
+          >
+            <view class="time-picker">
+              开始：{{openTime || '请选择'}}
+            </view>
+          </picker>
+          <text class="time-divider">-</text>
+          <picker 
+            mode="time" 
+            bindchange="onTimeChange" 
+            value="{{closeTime}}"
+            data-field="close"
+          >
+            <view class="time-picker">
+              结束：{{closeTime || '请选择'}}
+            </view>
+          </picker>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-section">
+      <button 
+        class="submit-btn {{canSubmit ? '' : 'disabled'}}" 
+        form-type="submit"
+        disabled="{{!canSubmit || submitting}}"
+      >
+        {{submitting ? '提交中...' : '提交'}}
+      </button>
+    </view>
+  </form>
+</view>

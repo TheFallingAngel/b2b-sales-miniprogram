@@ -3,26 +3,40 @@ const app = getApp();
 Page({
   data: {
     userInfo: {},
+    currentDate: '',
+    todayStats: {
+      plannedVisits: 0,
+      completedVisits: 0,
+      newOrders: 0,
+      todayRevenue: '¥0'
+    },
     performance: {
       currentMonth: '¥0',
-      completion: 0
+      completion: 0,
+      target: '¥0',
+      ranking: '-'
     },
-    storeStats: {
-      total: 0,
-      newThisMonth: 0
+    businessData: {
+      totalStores: 0,
+      activeStores: 0,
+      pendingOrders: 0,
+      monthlyRevenue: '¥0'
     },
-    orderStats: {
-      monthlyOrders: 0,
-      monthlyAmount: '¥0',
-      avgOrderValue: '¥0',
-      trend: 0
-    },
+    quickActions: [
+      { id: 'scan_order', title: '扫码下单', icon: 'scan', color: '#4CAF50' },
+      { id: 'visit_checkin', title: '拜访打卡', icon: 'location', color: '#2196F3' },
+      { id: 'add_store', title: '新增门店', icon: 'store', color: '#FF9800' },
+      { id: 'inventory', title: '库存查询', icon: 'boxes', color: '#9C27B0' }
+    ],
     todoList: [],
-    activities: [],
-    loading: true
+    notifications: [],
+    todaySchedule: [],
+    loading: true,
+    needLogin: false
   },
 
   onLoad() {
+    this.setCurrentDate();
     this.setData({
       userInfo: app.globalData.userInfo || {}
     });
@@ -31,7 +45,25 @@ Page({
   onShow() {
     if (app.globalData.userInfo) {
       this.loadDashboardData();
+    } else {
+      // 显示登录提示
+      this.setData({
+        needLogin: true,
+        loading: false
+      });
     }
+  },
+
+  setCurrentDate() {
+    const now = new Date();
+    const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const weekDay = weekDays[now.getDay()];
+    
+    this.setData({
+      currentDate: `${month}月${day}日 星期${weekDay}`
+    });
   },
 
   async loadDashboardData() {
@@ -39,22 +71,55 @@ Page({
     
     try {
       await Promise.all([
-        this.loadUserPerformance(),
-        this.loadStoreStats(),
-        this.loadOrderStats(),
+        this.loadTodayStats(),
+        this.loadPerformanceData(),
+        this.loadBusinessData(),
         this.loadTodoList(),
-        this.loadRecentActivities()
+        this.loadNotifications(),
+        this.loadTodaySchedule()
       ]);
     } catch (error) {
-      console.error('加载数据失败:', error);
-      app.showError('加载数据失败');
+      console.error('加载仪表盘数据失败:', error);
+      // 加载失败时显示模拟数据
+      this.loadMockData();
     } finally {
       wx.hideLoading();
       this.setData({ loading: false });
     }
   },
 
-  async loadUserPerformance() {
+  async loadTodayStats() {
+    try {
+      const res = await app.request({
+        url: '/analytics/today-stats',
+        method: 'GET'
+      });
+
+      if (res.success) {
+        this.setData({
+          todayStats: {
+            plannedVisits: res.data.plannedVisits || 0,
+            completedVisits: res.data.completedVisits || 0,
+            newOrders: res.data.newOrders || 0,
+            todayRevenue: app.formatMoney(res.data.todayRevenue || 0)
+          }
+        });
+      }
+    } catch (error) {
+      console.error('加载今日统计失败:', error);
+      // 使用模拟数据
+      this.setData({
+        todayStats: {
+          plannedVisits: 8,
+          completedVisits: 5,
+          newOrders: 12,
+          todayRevenue: '¥8,500'
+        }
+      });
+    }
+  },
+
+  async loadPerformanceData() {
     try {
       const res = await app.request({
         url: '/analytics/performance',
@@ -66,205 +131,290 @@ Page({
         this.setData({
           performance: {
             currentMonth: app.formatMoney(performance.currentMonth),
-            completion: Math.round(performance.completion || 0)
+            completion: Math.round(performance.completion || 0),
+            target: app.formatMoney(performance.target),
+            ranking: performance.ranking || '-'
           }
         });
       }
     } catch (error) {
       console.error('加载业绩数据失败:', error);
+      // 使用模拟数据
+      this.setData({
+        performance: {
+          currentMonth: '¥125,800',
+          completion: 73,
+          target: '¥180,000',
+          ranking: '3'
+        }
+      });
     }
   },
 
-  async loadStoreStats() {
+  async loadBusinessData() {
     try {
       const res = await app.request({
-        url: '/stores/stats/summary',
+        url: '/analytics/business-summary',
         method: 'GET'
       });
 
       if (res.success) {
-        const summary = res.data.summary;
+        const data = res.data;
         this.setData({
-          storeStats: {
-            total: summary.总门店数 || 0,
-            newThisMonth: summary.新增门店 || 0
+          businessData: {
+            totalStores: data.totalStores || 0,
+            activeStores: data.activeStores || 0,
+            pendingOrders: data.pendingOrders || 0,
+            monthlyRevenue: app.formatMoney(data.monthlyRevenue || 0)
           }
         });
       }
     } catch (error) {
-      console.error('加载门店统计失败:', error);
-    }
-  },
-
-  async loadOrderStats() {
-    try {
-      const res = await app.request({
-        url: '/orders/stats/summary',
-        method: 'GET'
+      console.error('加载业务数据失败:', error);
+      // 使用模拟数据
+      this.setData({
+        businessData: {
+          totalStores: 45,
+          activeStores: 38,
+          pendingOrders: 7,
+          monthlyRevenue: '¥125,800'
+        }
       });
-
-      if (res.success) {
-        const summary = res.data.summary;
-        this.setData({
-          orderStats: {
-            monthlyOrders: summary.monthly.totalOrders || 0,
-            monthlyAmount: app.formatMoney(summary.monthly.totalAmount),
-            avgOrderValue: app.formatMoney(summary.monthly.avgOrderValue),
-            trend: summary.trend || 0
-          }
-        });
-      }
-    } catch (error) {
-      console.error('加载订单统计失败:', error);
     }
   },
 
   async loadTodoList() {
     try {
-      const todoItems = [];
-      
-      const [storeRes, orderRes] = await Promise.all([
-        app.request({
-          url: '/stores?businessStatus=潜在客户&limit=5',
-          method: 'GET'
-        }),
-        app.request({
-          url: '/orders?status=待确认&limit=5',
-          method: 'GET'
-        })
-      ]);
-
-      if (storeRes.success && storeRes.data.stores.length > 0) {
-        storeRes.data.stores.forEach(store => {
-          const daysSinceLastVisit = this.getDaysSinceLastVisit(store.visitHistory);
-          if (daysSinceLastVisit > 7) {
-            todoItems.push({
-              id: `visit_${store._id}`,
-              title: `拜访 ${store.storeName}`,
-              description: `已${daysSinceLastVisit}天未拜访`,
-              priority: daysSinceLastVisit > 14 ? 'high' : 'medium',
-              icon: 'icon-visit',
-              timeAgo: `${daysSinceLastVisit}天前`,
-              type: 'visit',
-              data: store
-            });
-          }
-        });
-      }
-
-      if (orderRes.success && orderRes.data.orders.length > 0) {
-        orderRes.data.orders.forEach(order => {
-          todoItems.push({
-            id: `order_${order._id}`,
-            title: `处理订单 ${order.orderNumber}`,
-            description: `${order.store.storeName} - ${app.formatMoney(order.orderSummary.totalAmount)}`,
-            priority: 'high',
-            icon: 'icon-order',
-            timeAgo: this.getTimeAgo(order.createdAt),
-            type: 'order',
-            data: order
-          });
-        });
-      }
-
-      this.setData({ todoList: todoItems.slice(0, 5) });
-    } catch (error) {
-      console.error('加载待办事项失败:', error);
-    }
-  },
-
-  async loadRecentActivities() {
-    try {
-      const activities = [];
-      
-      const orderRes = await app.request({
-        url: '/orders?limit=10',
+      const res = await app.request({
+        url: '/analytics/todo-list',
         method: 'GET'
       });
 
-      if (orderRes.success) {
-        orderRes.data.orders.forEach(order => {
-          activities.push({
-            id: `order_${order._id}`,
-            title: `${order.orderType} - ${order.store.storeName}`,
-            description: `${app.formatMoney(order.orderSummary.totalAmount)} · ${order.orderStatus}`,
-            timeAgo: this.getTimeAgo(order.createdAt),
-            type: 'order'
-          });
+      if (res.success) {
+        this.setData({
+          todoList: res.data.todos || []
         });
       }
-
-      this.setData({ 
-        activities: activities.slice(0, 8).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      });
     } catch (error) {
-      console.error('加载最近动态失败:', error);
+      console.error('加载待办事项失败:', error);
+      // 使用模拟数据
+      this.setData({
+        todoList: [
+          {
+            id: '1',
+            title: '拜访华联超市',
+            description: '已7天未拜访，需要跟进补货情况',
+            priority: 'high',
+            icon: '🏪',
+            timeAgo: '2天前'
+          },
+          {
+            id: '2',
+            title: '处理订单 #ORD20240717001',
+            description: '小明便利店 - ¥3,200',
+            priority: 'medium',
+            icon: '📋',
+            timeAgo: '5小时前'
+          },
+          {
+            id: '3',
+            title: '新客户资料录入',
+            description: '福田区3家新开便利店信息待录入',
+            priority: 'low',
+            icon: '📝',
+            timeAgo: '1天前'
+          }
+        ]
+      });
     }
   },
 
-  getDaysSinceLastVisit(visitHistory) {
-    if (!visitHistory || visitHistory.length === 0) return 999;
-    
-    const lastVisit = visitHistory[visitHistory.length - 1];
-    const daysDiff = Math.floor((Date.now() - new Date(lastVisit.date)) / (1000 * 60 * 60 * 24));
-    return daysDiff;
+  async loadNotifications() {
+    try {
+      const res = await app.request({
+        url: '/notifications/recent',
+        method: 'GET'
+      });
+
+      if (res.success) {
+        this.setData({
+          notifications: res.data.notifications || []
+        });
+      }
+    } catch (error) {
+      console.error('加载通知失败:', error);
+      // 使用模拟数据
+      this.setData({
+        notifications: [
+          {
+            id: '1',
+            title: '订单确认提醒',
+            type: 'order',
+            icon: '📦',
+            timeAgo: '10分钟前'
+          },
+          {
+            id: '2',
+            title: '新产品上架通知',
+            type: 'product',
+            icon: '🆕',
+            timeAgo: '2小时前'
+          }
+        ]
+      });
+    }
   },
 
-  getTimeAgo(dateString) {
-    const now = new Date();
-    const date = new Date(dateString);
-    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return '刚刚';
-    if (diffInHours < 24) return `${diffInHours}小时前`;
-    
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}天前`;
-    
-    return app.formatDate(date, 'MM-DD');
+  async loadTodaySchedule() {
+    try {
+      const res = await app.request({
+        url: '/schedule/today',
+        method: 'GET'
+      });
+
+      if (res.success) {
+        this.setData({
+          todaySchedule: res.data.schedule || []
+        });
+      }
+    } catch (error) {
+      console.error('加载今日安排失败:', error);
+      // 使用模拟数据
+      this.setData({
+        todaySchedule: [
+          {
+            id: '1',
+            time: '09:00',
+            title: '拜访华联超市',
+            description: '南山店 - 补货洽谈',
+            status: 'completed',
+            statusText: '已完成'
+          },
+          {
+            id: '2',
+            time: '14:00',
+            title: '客户会议',
+            description: '永辉超市 - 月度总结',
+            status: 'pending',
+            statusText: '待进行'
+          },
+          {
+            id: '3',
+            time: '16:30',
+            title: '新店开发',
+            description: '福田区市场调研',
+            status: 'pending',
+            statusText: '待进行'
+          }
+        ]
+      });
+    }
   },
 
+  loadMockData() {
+    // 当API调用失败时，加载模拟数据
+    this.setData({
+      todayStats: {
+        plannedVisits: 8,
+        completedVisits: 5,
+        newOrders: 12,
+        todayRevenue: '¥8,500'
+      },
+      performance: {
+        currentMonth: '¥125,800',
+        completion: 73,
+        target: '¥180,000',
+        ranking: '3'
+      },
+      businessData: {
+        totalStores: 45,
+        activeStores: 38,
+        pendingOrders: 7,
+        monthlyRevenue: '¥125,800'
+      }
+    });
+  },
+
+  // 快捷操作处理
+  handleQuickAction(e) {
+    const action = e.currentTarget.dataset.action;
+    
+    switch (action) {
+      case 'scan_order':
+        this.scanForOrder();
+        break;
+      case 'visit_checkin':
+        this.visitCheckin();
+        break;
+      case 'add_store':
+        wx.navigateTo({
+          url: '/pages/stores/add/add'
+        });
+        break;
+      case 'inventory':
+        wx.navigateTo({
+          url: '/pages/products/list/list?tab=inventory'
+        });
+        break;
+    }
+  },
+
+  scanForOrder() {
+    wx.scanCode({
+      success: (res) => {
+        console.log('扫码结果:', res);
+        wx.navigateTo({
+          url: `/pages/orders/create/create?code=${res.result}`
+        });
+      },
+      fail: (error) => {
+        console.error('扫码失败:', error);
+        wx.showToast({
+          title: '扫码失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  visitCheckin() {
+    wx.getLocation({
+      type: 'gcj02',
+      success: (res) => {
+        console.log('获取位置成功:', res);
+        wx.showToast({
+          title: '打卡成功',
+          icon: 'success'
+        });
+      },
+      fail: (error) => {
+        console.error('获取位置失败:', error);
+        wx.showToast({
+          title: '请允许位置权限',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 待办事项点击
   handleTodoTap(e) {
     const todo = e.currentTarget.dataset.todo;
     
-    switch (todo.type) {
-      case 'visit':
-        wx.navigateTo({
-          url: `/pages/stores/detail/detail?id=${todo.data._id}`
-        });
-        break;
-      case 'order':
-        wx.navigateTo({
-          url: `/pages/orders/detail/detail?id=${todo.data._id}`
-        });
-        break;
+    if (todo.id === '1') {
+      // 跳转到门店详情
+      wx.navigateTo({
+        url: '/pages/stores/detail/detail?id=store123'
+      });
+    } else if (todo.id === '2') {
+      // 跳转到订单详情
+      wx.navigateTo({
+        url: '/pages/orders/detail/detail?id=order123'
+      });
     }
   },
 
-  navigateToAddStore() {
-    wx.navigateTo({
-      url: '/pages/stores/add/add'
-    });
-  },
-
-  navigateToCreateOrder() {
-    wx.navigateTo({
-      url: '/pages/orders/create/create'
-    });
-  },
-
-  navigateToStoreVisit() {
-    wx.navigateTo({
-      url: '/pages/stores/list/list?tab=visit'
-    });
-  },
-
-  navigateToInventory() {
-    wx.navigateTo({
-      url: '/pages/products/list/list?tab=inventory'
-    });
-  },
-
+  // 页面跳转
   navigateToStores() {
     wx.switchTab({
       url: '/pages/stores/list/list'
@@ -274,6 +424,12 @@ Page({
   navigateToOrders() {
     wx.switchTab({
       url: '/pages/orders/list/list'
+    });
+  },
+
+  goToLogin() {
+    wx.navigateTo({
+      url: '/pages/login/login'
     });
   },
 

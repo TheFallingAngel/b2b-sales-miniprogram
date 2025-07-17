@@ -11,6 +11,8 @@ const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const analyticsRoutes = require('./routes/analytics');
 const customerRoutes = require('./routes/customers');
+const notificationRoutes = require('./routes/notifications');
+const scheduleRoutes = require('./routes/schedule');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -38,6 +40,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/customers', customerRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/schedule', scheduleRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -54,7 +58,7 @@ app.post('/api/init-database', async (req, res) => {
     // 检查数据库连接状态
     if (mongoose.connection.readyState !== 1) {
       return res.status(500).json({ 
-        success: false, 
+        success: false,
         message: '数据库连接未就绪',
         connectionState: mongoose.connection.readyState 
       });
@@ -102,6 +106,47 @@ app.post('/api/init-database', async (req, res) => {
       message: '初始化失败', 
       error: error.message,
       errorName: error.name
+    });
+  }
+});
+
+// Railway专用：创建完整测试数据接口
+app.post('/api/railway-init', async (req, res) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(500).json({ 
+        success: false, 
+        message: '数据库连接未就绪' 
+      });
+    }
+
+    console.log('🚀 开始Railway测试数据初始化...');
+    
+    // 动态导入初始化函数
+    const initRailwayProductionData = require('../scripts/railway-production-data');
+    
+    // 在后台运行，避免超时
+    setImmediate(async () => {
+      try {
+        await initRailwayProductionData();
+        console.log('✅ Railway测试数据初始化完成');
+      } catch (error) {
+        console.error('❌ Railway测试数据初始化失败:', error);
+      }
+    });
+
+    res.json({ 
+      success: true, 
+      message: '测试数据初始化已开始，请稍候完成',
+      tip: '可查看日志或稍后尝试登录: 13900000003/123456'
+    });
+
+  } catch (error) {
+    console.error('Railway初始化接口错误:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: '初始化失败', 
+      error: error.message
     });
   }
 });

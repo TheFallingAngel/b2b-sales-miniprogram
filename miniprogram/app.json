@@ -66,10 +66,13 @@
       "desc": "需要获取您的位置信息用于门店定位"
     }
   },
-  "requiredBackgroundModes": ["location"],
+  "requiredBackgroundModes": [
+    "location"
+  ],
   "networkTimeout": {
     "request": 10000,
     "downloadFile": 10000
   },
-  "debug": false
+  "debug": false,
+  "sitemapLocation": "sitemap.json"
 }

@@ -8,6 +8,10 @@
     "start": "node server/index.js",
     "start:local": "node scripts/start-local.js",
     "create:testdata": "node scripts/create-test-data.js",
+    "init:production": "node scripts/init-production-db.js",
+    "railway:init": "node scripts/railway-production-data.js",
+    "railway:reset": "node scripts/railway-production-data.js --force",
+    "test:db": "node scripts/test-db-connection.js",
     "build": "echo 'No build needed for API server'"
   },
   "dependencies": {
