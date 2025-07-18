@@ -23,7 +23,13 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect(process.env.MONGO_URL || process.env.MONGODB_URI || 'mongodb://localhost:27017/b2b_sales', {
+// 构建正确的MongoDB连接字符串
+const mongoUrl = process.env.MONGO_URL || process.env.MONGODB_URI || 'mongodb://localhost:27017/b2b_sales';
+const finalMongoUrl = mongoUrl.includes('/b2b_sales') ? mongoUrl : `${mongoUrl}/b2b_sales`;
+
+console.log('正在连接数据库:', finalMongoUrl);
+
+mongoose.connect(finalMongoUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

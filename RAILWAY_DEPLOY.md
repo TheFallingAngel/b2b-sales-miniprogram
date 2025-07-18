@@ -17,7 +17,7 @@
 
 ```bash
 # 必需的环境变量
-MONGO_URL=mongodb://mongodb-production-208a.up.railway.app:27017
+MONGO_URL=mongodb://mongodb-production-208a.up.railway.app:27017/b2b_sales
 JWT_SECRET=your_jwt_secret_key_here
 NODE_ENV=production
 
@@ -31,7 +31,7 @@ PORT=3000
 1. 在项目中添加MongoDB服务
 2. 设置环境变量：
    ```
-   MONGO_URL=mongodb://mongodb-production-208a.up.railway.app:27017
+   MONGO_URL=mongodb://mongodb-production-208a.up.railway.app:27017/b2b_sales
    ```
 
 #### 选项B: 使用MongoDB Atlas
@@ -174,7 +174,7 @@ GET /api/health
 # 检查MONGO_URL环境变量是否正确设置
 # 确认MongoDB服务已在Railway中启动
 # 验证连接字符串格式：
-# mongodb://mongodb-production-208a.up.railway.app:27017
+# mongodb://mongodb-production-208a.up.railway.app:27017/b2b_sales
 
 # 如果显示"数据库连接未就绪"，请在Railway控制台执行：
 # 1. 确认MongoDB服务正在运行
