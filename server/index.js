@@ -23,13 +23,12 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// 构建正确的MongoDB连接字符串
-const mongoUrl = process.env.MONGO_URL || process.env.MONGODB_URI || 'mongodb://localhost:27017/test';
-const finalMongoUrl = mongoUrl.includes('/test') ? mongoUrl : `${mongoUrl}/test`;
+// 使用Railway MongoDB环境变量
+const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost:27017/test';
 
-console.log('正在连接数据库:', finalMongoUrl);
+console.log('正在连接数据库:', mongoUrl);
 
-mongoose.connect(finalMongoUrl, {
+mongoose.connect(mongoUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

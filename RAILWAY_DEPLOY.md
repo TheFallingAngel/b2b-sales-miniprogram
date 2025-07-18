@@ -17,7 +17,7 @@
 
 ```bash
 # 必需的环境变量
-MONGO_URL=mongodb://mongo:nroNxsYQYTDDMJYUUVJewtTmDywDsVrE@mongodb.railway.internal:27017/test
+MONGO_URL=${{MongoDB.MONGO_URL}}  # Railway自动提供
 JWT_SECRET=your_jwt_secret_key_here
 NODE_ENV=production
 
@@ -29,9 +29,10 @@ PORT=3000
 
 #### 选项A: 使用Railway内置MongoDB (当前配置)
 1. 在项目中添加MongoDB服务
-2. 设置环境变量：
+2. Railway会自动提供 `MONGO_URL` 环境变量
+3. 在Variables页面设置：
    ```
-   MONGO_URL=mongodb://mongo:nroNxsYQYTDDMJYUUVJewtTmDywDsVrE@mongodb.railway.internal:27017/test
+   MONGO_URL=${{MongoDB.MONGO_URL}}
    ```
 
 #### 选项B: 使用MongoDB Atlas
@@ -173,8 +174,8 @@ GET /api/health
 ```bash
 # 检查MONGO_URL环境变量是否正确设置
 # 确认MongoDB服务已在Railway中启动
-# 验证连接字符串格式：
-# mongodb://mongo:PASSWORD@mongodb.railway.internal:27017/test
+# 确认使用Railway自动生成的变量：
+# MONGO_URL=${{MongoDB.MONGO_URL}}
 
 # 如果显示"数据库连接未就绪"，请在Railway控制台执行：
 # 1. 确认MongoDB服务正在运行
